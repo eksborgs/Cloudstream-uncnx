@@ -1,4 +1,6 @@
 name: Build CloudStream Plugin
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
@@ -13,35 +15,29 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Plugins Conditional Logic
+      - name: Build Plugins
         run: |
           if [ -f gradlew ]; then
-            echo "Memproses ./gradlew..."
+            echo "✅ Using ./gradlew"
             chmod +x gradlew
             ./gradlew make --stacktrace
           elif [ -f build.gradle.kts ] || [ -f build.gradle ]; then
-            echo "Memproses gradle sistem..."
+            echo "✅ Using gradle"
             gradle make --stacktrace
           else
-            echo "Tiada fail Gradle dikesan. Memintas kompilasi logik dan mengekstrak manifest sahaja."
+            echo "⚠️ No Gradle found. Skipping."
             mkdir -p build
-            cp plugins.json build/ 2>/dev/null || true
+            echo '{"status":"skipped"}' > build/plugins.json
           fi
-
-      - name: Deploy to builds branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build
-          branch: builds
-          commit-message: "Deploy artifacts via robust conditional pipeline"
+          ls -la build/ || true
