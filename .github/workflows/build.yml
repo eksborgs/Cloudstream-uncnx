@@ -9,21 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build Plugin
+      - name: Setup Output Directory & Zip
         run: |
           mkdir -p build_output
-          zip -r build_output/UncenxProvider.zip src/ manifest.json
+          zip -r build_output/UncenxProvider.zip . -x "*.git*"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UncenxProvider-Plugin
           path: build_output/
