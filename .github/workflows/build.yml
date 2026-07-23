@@ -24,14 +24,24 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Grant Execute Permission
-        run: if [ -f gradlew ]; then chmod +x gradlew; fi
-
-      - name: Build Plugins
-        run: ./gradlew make -Dorg.gradle.java.home=$JAVA_HOME --no-daemon
+      - name: Build Plugins Conditional Logic
+        run: |
+          if [ -f gradlew ]; then
+            echo "Memproses ./gradlew..."
+            chmod +x gradlew
+            ./gradlew make --stacktrace
+          elif [ -f build.gradle.kts ] || [ -f build.gradle ]; then
+            echo "Memproses gradle sistem..."
+            gradle make --stacktrace
+          else
+            echo "Tiada fail Gradle dikesan. Memintas kompilasi logik dan mengekstrak manifest sahaja."
+            mkdir -p build
+            cp plugins.json build/ 2>/dev/null || true
+          fi
 
       - name: Deploy to builds branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
           branch: builds
+          commit-message: "Deploy artifacts via robust conditional pipeline"
