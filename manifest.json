@@ -1,0 +1,8 @@
+{
+  "name": "UncenX Provider",
+  "pluginVersion": 1,
+  "description": "Auto-generated CloudStream provider for UncenX",
+  "authors": ["kittenoid-lab"],
+  "status": 1,
+  "type": 1
+}
