@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,13 +16,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Output Directory & Zip
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Create Artifact Zip
         run: |
-          mkdir -p build_output
-          zip -r build_output/UncenxProvider.zip . -x "*.git*"
+          mkdir -p output
+          zip -r output/UncenxProvider.zip . -x "*.git*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: UncenxProvider-Plugin
-          path: build_output/
+          path: output/
